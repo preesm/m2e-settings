@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/nl.topicus.m2e.settings.feature_2.0.5.qualifier.jar" id="nl.topicus.m2e.settings.feature" version="2.0.5.qualifier"/>
+   <feature url="features/nl.topicus.m2e.settings.feature_2.0.5.qualifier.jar" id="nl.topicus.m2e.settings.feature" version="2.0.5.qualifier">
+      <category name="m2e.settings.category"/>
+   </feature>
+   <category-def name="m2e.settings.category" label="M2E Settings"/>
 </site>
