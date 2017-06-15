@@ -2,6 +2,8 @@ package nl.topicus.m2e.settings.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -104,8 +106,9 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 
 			InputStream contentStream = null;
 			try {
-				contentStream = openStream(eclipsePreference.getLocation(),
-						eclipsePlugin, monitor);
+				contentStream = openStream(projectConfigurationRequest,
+						eclipsePreference.getLocation(), eclipsePlugin,
+						monitor);
 				if (contentStream == null) {
 					LOGGER.error("Could not find content for: "
 							+ eclipsePreference.getLocation());
@@ -146,8 +149,10 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 			outputCurrent.delete(true, null);
 	}
 
-	private InputStream openStream(String filePath, Plugin eclipsePlugin,
-			IProgressMonitor monitor) throws IOException, CoreException {
+	private InputStream openStream(
+			ProjectConfigurationRequest projectConfigurationRequest,
+			String filePath, Plugin eclipsePlugin, IProgressMonitor monitor)
+			throws IOException, CoreException {
 
 		// first remvoe leading /
 		final String cleanFilePath;
@@ -155,6 +160,19 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 			cleanFilePath = filePath.substring(1);
 		else
 			cleanFilePath = filePath;
+
+		// lookup in current file system
+		final MavenProject mavenProject = projectConfigurationRequest
+				.getMavenProject();
+
+		final java.nio.file.Path path = FileSystems.getDefault().getPath(
+				mavenProject.getBasedir().getAbsolutePath(), cleanFilePath);
+		final boolean exists = path.toFile().exists();
+		if (exists) {
+			final String message = "Found entry on local file system";
+			LOGGER.info(message);
+			return Files.newInputStream(path);
+		}
 
 		// if not found, lookup in dependency jars
 		List<JarFile> jarFiles = JarFileUtil.resolveJar(maven,
