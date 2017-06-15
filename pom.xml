@@ -15,7 +15,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<mvn.build.java.version>1.7</mvn.build.java.version>
+		<mvn.build.java.version>1.8</mvn.build.java.version>
 		<repositoryPathId>m2e-settings</repositoryPathId>
 		<p2MetadataName>M2E Handler for maven-eclipse-plugin</p2MetadataName>
 	</properties>
@@ -25,6 +25,16 @@
 		<module>nl.topicus.m2e.settings.feature</module>
 		<module>nl.topicus.m2e.settings.repository</module>
 	</modules>
+
+
+	<repositories>
+		<!-- add M2E releases repository to resolve dependencies -->
+		<repository>
+			<id>M2E P2 Repos</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/technology/m2e/releases/</url>
+		</repository>
+	</repositories>
 
 	<build>
 		<pluginManagement>
