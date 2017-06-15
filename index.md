@@ -1,37 +1,12 @@
-## Welcome to GitHub Pages
+# M2E Settings
 
-You can use the [editor on GitHub](https://github.com/antoine-morvan/m2e-settings/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+Provide consistent Eclipse IDE settings for your team from a Maven POM.
+The M2E Settings plugin will copy formatting, findbugs and other plugin
+settings from a centrally maintained settings JAR to your workspace and
+configure each project to use those settings.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+ - uses the Maven Eclipse Plugin settings as a base
+ - configure once, set everywhere
+ - version control your settings
 
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/antoine-morvan/m2e-settings/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+See readme https://github.com/antoine-morvan/m2e-settings/blob/master/readme.markdown
