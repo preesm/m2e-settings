@@ -10,5 +10,5 @@
 
 	<artifactId>nl.topicus.m2e.settings.feature</artifactId>
 	<packaging>eclipse-feature</packaging>
-	<name>Feature</name>
+	<name>M2E Settings :: Feature</name>
 </project>

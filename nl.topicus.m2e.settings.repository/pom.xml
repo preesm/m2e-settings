@@ -10,5 +10,5 @@
 
 	<artifactId>nl.topicus.m2e.settings.repository</artifactId>
 	<packaging>eclipse-repository</packaging>
-	<name>Update site</name>
+	<name>M2E Settings :: Update-Site</name>
 </project>

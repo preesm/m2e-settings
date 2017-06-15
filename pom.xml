@@ -10,7 +10,7 @@
 	<artifactId>nl.topicus.m2e.settings.parent</artifactId>
 	<version>2.0.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Parent</name>
+	<name>M2E Settings :: Parent</name>
 	<description>Allow the eclipse settings configuration (file encoding, formater ...) from maven configuration.</description>
 
 	<properties>
