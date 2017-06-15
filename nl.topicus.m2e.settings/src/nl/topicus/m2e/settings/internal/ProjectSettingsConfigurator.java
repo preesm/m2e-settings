@@ -5,9 +5,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IFile;
@@ -41,15 +39,13 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 		MavenProject mavenProject = projectConfigurationRequest
 				.getMavenProject();
 
-		Plugin eclipsePlugin = mavenProject.getPluginManagement()
-				.getPluginsAsMap()
+		Plugin eclipsePlugin = mavenProject.getBuild().getPluginsAsMap()
 				.get(ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN);
 		if (eclipsePlugin == null) {
 			LOGGER.info("Could not set eclipse settings, consider "
 					+ ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN + "!");
 		} else {
-			LOGGER.info("Using "
-					+ ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN
+			LOGGER.info("Using " + ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN
 					+ " configuration");
 			try {
 				if (configureEclipseMeta(project, eclipsePlugin, monitor)) {
@@ -77,9 +73,8 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 	 * @throws IOException
 	 * @throws CoreException
 	 */
-	private boolean configureEclipseMeta(IProject project,
-			Plugin eclipsePlugin, IProgressMonitor monitor) throws IOException,
-			CoreException {
+	private boolean configureEclipseMeta(IProject project, Plugin eclipsePlugin,
+			IProgressMonitor monitor) throws IOException, CoreException {
 
 		List<EclipseSettingsFile> settingsFiles = ConfigurationHelper
 				.extractSettingsFile(eclipsePlugin);
@@ -117,8 +112,8 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 								contentStream,
 								prefName.substring(10, prefName.length() - 6));
 					} else {
-						IPath outputPath = Path.fromOSString(eclipsePreference
-								.getName());
+						IPath outputPath = Path
+								.fromOSString(eclipsePreference.getName());
 						IResource outputCurrent = project
 								.findMember(outputPath);
 						if (outputCurrent != null)
