@@ -149,44 +149,44 @@ A sample configuration would look like the following blob.
 ``` xml
 <!-- Specific profile for Eclipse related configuration -->
 <profile>
-	<id>only-eclipse</id>
-	<activation>
-		<property>
-			<name>m2e.version</name>
-		</property>
-	</activation>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.9</version>
-				<dependencies>
-					<dependency>
-						<groupId>com.example.settings</groupId>
-						<artifactId>eclipse-settings</artifactId>
-						<version>1.0</version>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<phase>initialize</phase>
-						<goals>
-							<goal>eclipse</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<additionalConfig>
-						<file>
-							<name>.settings/org.eclipse.jdt.core.prefs</name>
-							<location>/org.eclipse.jdt.core.prefs</location>
-						</file>
-					</additionalConfig>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+  <id>only-eclipse</id>
+  <activation>
+    <property>
+      <name>m2e.version</name>
+    </property>
+  </activation>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.9</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.example.settings</groupId>
+            <artifactId>eclipse-settings</artifactId>
+            <version>1.0</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>eclipse</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <additionalConfig>
+            <file>
+              <name>.settings/org.eclipse.jdt.core.prefs</name>
+              <location>/org.eclipse.jdt.core.prefs</location>
+            </file>
+          </additionalConfig>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </profile>
 ```
 
@@ -225,25 +225,25 @@ we can write the following configuration
 
 ``` xml
 <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-eclipse-plugin</artifactId>
-	<version>2.9</version>
-	<executions>
-		<execution>
-			<phase>initialize</phase>
-			<goals>
-				<goal>eclipse</goal>
-			</goals>
-		</execution>
-	</executions>
-	<configuration>
-		<additionalConfig>
-			<file>
-				<name>.settings/org.eclipse.jdt.core.prefs</name>
-				<location>../../settings/org.eclipse.jdt.core.prefs</location>
-			</file>
-		</additionalConfig>
-	</configuration>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-eclipse-plugin</artifactId>
+  <version>2.9</version>
+  <executions>
+    <execution>
+      <phase>initialize</phase>
+      <goals>
+        <goal>eclipse</goal>
+      </goals>
+    </execution>
+  </executions>
+  <configuration>
+    <additionalConfig>
+      <file>
+        <name>.settings/org.eclipse.jdt.core.prefs</name>
+        <location>../../settings/org.eclipse.jdt.core.prefs</location>
+      </file>
+    </additionalConfig>
+  </configuration>
 </plugin>
 ```
 
@@ -259,16 +259,16 @@ with a relative path that works for the parent plugin:
 
 ``` xml
 <!-- This location will work for nested plugins and
-	 silently fail for the parent -->
+   silently fail for the parent -->
 <file>
-	<name>.settings/org.eclipse.jdt.core.prefs</name>
-	<location>../../settings/org.eclipse.jdt.core.prefs</location>
+  <name>.settings/org.eclipse.jdt.core.prefs</name>
+  <location>../../settings/org.eclipse.jdt.core.prefs</location>
 </file>
 <!-- This location will silently fail for nested
-	 plugins and work for the parent -->
+   plugins and work for the parent -->
 <file>
-	<name>.settings/org.eclipse.jdt.core.prefs</name>
-	<location>./settings/org.eclipse.jdt.core.prefs</location>
+  <name>.settings/org.eclipse.jdt.core.prefs</name>
+  <location>./settings/org.eclipse.jdt.core.prefs</location>
 </file>
 ```
 
