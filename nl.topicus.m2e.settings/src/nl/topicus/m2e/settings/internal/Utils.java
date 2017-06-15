@@ -9,7 +9,7 @@ public final class Utils {
 		if (!folder.exists()) {
 			IContainer parent = folder.getParent();
 			if (parent instanceof IFolder) {
-				createDirectory((IContainer) parent);
+				createDirectory(parent);
 			}
 			((IFolder) folder).create(true, true, null);
 		}
