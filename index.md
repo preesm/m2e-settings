@@ -9,4 +9,7 @@ configure each project to use those settings.
  - configure once, set everywhere
  - version control your settings
 
-See readme https://github.com/antoine-morvan/m2e-settings/blob/master/readme.markdown
+See readme [https://github.com/antoine-morvan/m2e-settings/blob/master/readme.markdown](https://github.com/antoine-morvan/m2e-settings/blob/master/readme.markdown).
+
+Install the Eclipse plugin from the update site at
+[https://antoine-morvan.github.io/m2e-settings/site/](https://antoine-morvan.github.io/m2e-settings/site/).
