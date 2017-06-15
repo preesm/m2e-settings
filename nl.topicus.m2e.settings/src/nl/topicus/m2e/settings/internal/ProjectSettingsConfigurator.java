@@ -42,11 +42,14 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 		Plugin eclipsePlugin = mavenProject.getBuild().getPluginsAsMap()
 				.get(ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN);
 		if (eclipsePlugin == null) {
-			LOGGER.info("Could not set eclipse settings, consider "
-					+ ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN + "!");
+			final String message = "Could not set eclipse settings, consider "
+					+ ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN + "!";
+			LOGGER.info(message);
 		} else {
-			LOGGER.info("Using " + ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN
-					+ " configuration");
+			final String message = "Using "
+					+ ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN
+					+ " configuration";
+			LOGGER.info(message);
 			try {
 				if (configureEclipseMeta(project, eclipsePlugin, monitor)) {
 					LOGGER.info("Project configured.");
@@ -62,7 +65,7 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 
 	/**
 	 * Use the org.apache.maven.plugins:maven-eclipse-plugin to force the
-	 * eclipse settngs.
+	 * eclipse settings.
 	 *
 	 * @param project
 	 * @param buildPluginMap
@@ -77,24 +80,26 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 			IProgressMonitor monitor) throws IOException, CoreException {
 
 		List<EclipseSettingsFile> settingsFiles = ConfigurationHelper
-				.extractSettingsFile(eclipsePlugin);
+				.readSettingsFileFromPom(eclipsePlugin);
 
 		if (settingsFiles == null) {
 			LOGGER.warn("No settings specified.");
 			return false;
 		}
 
-		List<JarFile> jarFiles = JarFileUtil.resolveJar(maven,
-				eclipsePlugin.getDependencies(), monitor);
-
-		applyEclipsePreferencesPref(project, settingsFiles, jarFiles);
+		applyEclipsePreferencesPref(project, settingsFiles, eclipsePlugin,
+				monitor);
 
 		return true;
 	}
 
 	private void applyEclipsePreferencesPref(IProject project,
-			List<EclipseSettingsFile> settingsFiles, List<JarFile> jarFiles)
-			throws IOException, CoreException {
+			List<EclipseSettingsFile> settingsFiles, Plugin eclipsePlugin,
+			IProgressMonitor monitor) throws IOException, CoreException {
+
+		List<JarFile> jarFiles = JarFileUtil.resolveJar(maven,
+				eclipsePlugin.getDependencies(), monitor);
+
 		for (EclipseSettingsFile eclipsePreference : settingsFiles) {
 
 			InputStream contentStream = null;
@@ -108,16 +113,15 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 					String prefName = eclipsePreference.getName();
 					if (prefName.startsWith(".settings/")
 							&& prefName.endsWith(".prefs")) {
+						// use Eclipse Preference services
 						ProjectPreferencesUtils.setOtherPreferences(project,
 								contentStream,
 								prefName.substring(10, prefName.length() - 6));
 					} else {
+						// copy file using IResource API
 						IPath outputPath = Path
 								.fromOSString(eclipsePreference.getName());
-						IResource outputCurrent = project
-								.findMember(outputPath);
-						if (outputCurrent != null)
-							outputCurrent.delete(true, null);
+						deleteIfExist(project, outputPath);
 						IFile outputFile = project.getFile(outputPath);
 						Utils.createDirectory(outputFile.getParent());
 						outputFile.create(contentStream, true, null);
@@ -135,6 +139,13 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 
 	}
 
+	private void deleteIfExist(IProject project, IPath outputPath)
+			throws CoreException {
+		IResource outputCurrent = project.findMember(outputPath);
+		if (outputCurrent != null)
+			outputCurrent.delete(true, null);
+	}
+
 	private InputStream openStream(String filePath, List<JarFile> jarFiles)
 			throws IOException {
 		if (filePath.startsWith("/"))
@@ -146,7 +157,9 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 				return jarFile.getInputStream(entry);
 			}
 		}
-		LOGGER.warn("Entry " + filePath + " not found in " + jarFiles);
+		final String message = "Entry " + filePath + " not found in "
+				+ jarFiles;
+		LOGGER.warn(message);
 		return null;
 	}
 

@@ -16,7 +16,7 @@ public final class ConfigurationHelper {
 	private ConfigurationHelper() {
 	}
 
-	public static List<EclipseSettingsFile> extractSettingsFile(Plugin eclipsePlugin) {
+	public static List<EclipseSettingsFile> readSettingsFileFromPom(Plugin eclipsePlugin) {
 
 		Xpp3Dom configurationXpp3Dom = (Xpp3Dom) eclipsePlugin
 				.getConfiguration();
@@ -26,10 +26,10 @@ public final class ConfigurationHelper {
 			return null;
 		}
 
-		return extractEclipsePreferences(configurationXpp3Dom);
+		return readEclipsePreferences(configurationXpp3Dom);
 	}
 
-	private static List<EclipseSettingsFile> extractEclipsePreferences(
+	private static List<EclipseSettingsFile> readEclipsePreferences(
 			Xpp3Dom configurationXpp3Dom) {
 		List<EclipseSettingsFile> settingsFiles = new ArrayList<EclipseSettingsFile>();
 		Xpp3Dom preferencesDom = configurationXpp3Dom
