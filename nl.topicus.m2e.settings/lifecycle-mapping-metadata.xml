@@ -3,11 +3,11 @@
   <pluginExecutions>
     <pluginExecution>
       <pluginExecutionFilter>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <versionRange>[2.3,)</versionRange>
+        <groupId>org.ietr.maven</groupId>
+        <artifactId>m2e-settings-maven-plugin</artifactId>
+        <versionRange>[0.0.0,)</versionRange>
         <goals>
-          <goal>eclipse</goal>
+          <goal>m2e-settings</goal>
         </goals>
       </pluginExecutionFilter>
       <action>

@@ -29,7 +29,7 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(ProjectSettingsConfigurator.class);
 
-	private static final String ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN = "org.apache.maven.plugins:maven-eclipse-plugin";
+	private static final String ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN = "org.ietr.maven:m2e-settings-maven-plugin";
 
 	@Override
 	public void configure(

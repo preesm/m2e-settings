@@ -7,7 +7,7 @@
 		<configurator
 				class="nl.topicus.m2e.settings.internal.ProjectSettingsConfigurator"
 				id="nl.topicus.m2e.settings.configurator"
-				name="Eclipse Extra Settings">
+				name="M2E Settings">
 		</configurator>
 	</extension>
 </plugin>
