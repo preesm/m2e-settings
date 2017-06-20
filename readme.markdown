@@ -24,12 +24,7 @@ This project is licensed under the [MIT license](https://github.com/topicusonder
 
 Update site URL:
 
- - https://github.com/topicusonderwijs/m2e-settings/raw/master/site
-
-### Eclipse Marketplace
-
-The plugin is also available from [Eclipse Marketplace](http://marketplace.eclipse.org/content/m2e-settings).
-Just open up the marketplace search and search for `M2E Settings`.
+ - https://antoine-morvan.github.io/m2e-settings/site/
 
 ### Installing the Eclipse plugin
 
@@ -43,11 +38,51 @@ Just open up the marketplace search and search for `M2E Settings`.
 
 ## Configuration
 
-There are two ways for configuring the M2E Settings
-plugin, that is using a settings jar or using file
-system setting files.
+This plugin reads the configuration from the POM file. It follows the structure of the [Maven Eclipse Plugin](http://maven.apache.org/components/plugins/maven-eclipse-plugin/eclipse-mojo.html#additionalConfig) additionalConfig for files only (the path can be classpath, systemfile, project relative thanks to the resource resolver from [m2e-code-quality](https://github.com/m2e-code-quality/m2e-code-quality)). However to avoid having M2Eclipse throwing errors, we created a dummy [m2e-settings-maven-plugin](https://github.com/preesm/preesm-maven/tree/master/m2e-settings-maven-plugin) that does nothing when called, but allow to write the configuration in the POM file.
+
+The default configuration would look like:
+
+```xml
+<profile>
+  <id>only-eclipse</id>
+  <activation>
+    <property>
+      <name>m2e.version</name>
+    </property>
+  </activation>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.ietr.maven</groupId>
+        <artifactId>m2e-settings-maven-plugin</artifactId>
+        <version>1.0.1</version>
+        <executions>
+          <execution>
+            <id>load-eclipse-settings</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>m2e-settings</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <additionalConfig>
+            <file>
+              <name>.settings/org.eclipse.jdt.core.prefs</name>
+              <location>/local/path/to/org.eclipse.jdt.core.prefs</location>
+            </file>
+          </additionalConfig>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</profile>
+```
 
 ### Using a Settings Jar
+
+One can use a Jar to centralize the settings. This allows to share them among several projects.
+
 There are three steps to configure the M2E Settings:
 
 1. Create (and deploy) your own settings jar (or use one from someone else)
@@ -64,7 +99,7 @@ contain the relevant Eclipse settings files for your plugins.
 First create an empty Maven project, and put this in the POM to build
 your settings jar (adjust the values for your own settings jar).
 
-``` xml
+```xml
 <project>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.example.settings</groupId>
@@ -100,7 +135,7 @@ package them into the resulting jar.
 Now you can copy the various Eclipse settings from the `.settings`
 folders into the files folder:
 
-``` bash
+```bash
 $ ls settings-project/files
 -rw-r--r--   1 dashorst  staff     55 Jul  7 17:52 edu.umd.cs.findbugs.plugin.eclipse.prefs
 -rw-r--r--   1 dashorst  staff    529 Jul  7 17:52 org.eclipse.core.resources.prefs
@@ -144,50 +179,23 @@ Finally, to prevent the execution of that plugin during a 'normal' maven
 build, we put all that configuration in a profile that is activated only
 by M2Eclipse.
 
-A sample configuration would look like the following blob.
+A sample configuration with such jar dependency would look like the 
+following blob (execution and configuration tags can be taken from the 
+example above).
 
 ``` xml
-<!-- Specific profile for Eclipse related configuration -->
-<profile>
-  <id>only-eclipse</id>
-  <activation>
-    <property>
-      <name>m2e.version</name>
-    </property>
-  </activation>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.9</version>
-        <dependencies>
-          <dependency>
-            <groupId>com.example.settings</groupId>
-            <artifactId>eclipse-settings</artifactId>
-            <version>1.0</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <phase>initialize</phase>
-            <goals>
-              <goal>eclipse</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <additionalConfig>
-            <file>
-              <name>.settings/org.eclipse.jdt.core.prefs</name>
-              <location>/org.eclipse.jdt.core.prefs</location>
-            </file>
-          </additionalConfig>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-</profile>
+<plugin>
+  <groupId>org.ietr.maven</groupId>
+  <artifactId>m2e-settings-maven-plugin</artifactId>
+  <version>1.0.1</version>
+    <dependency>
+      <groupId>org.ietr.preesm</groupId>
+      <artifactId>coding-policy</artifactId>
+      <version>${preesm-settings-version}</version>
+    </dependency>
+  </dependencies>
+  <!-- execution + configuration -->
+</plugin>
 ```
 
 #### Re-import projects in Eclipse
@@ -198,79 +206,6 @@ in Eclipse. Typically this is done by:
  - selecting all projects,
  - right-clicking on the selection and
  - clicking "Maven → Update project"
-
-### Using a Settings from the filesystem
-
-Another way of using settings is to share them along with the project,
-that is within the repository. In such case, no jar is needed. The
-configuration is very similar since we just have to remove the
-`<dependencies>` section and put file system paths in the locations.
-
-For instance, in a multimodule project with a repository as follows
-
-```
-└─ pom.xml
-   └─ plugins
-      └─ plugin1
-         └─ pomx.ml
-         └─ ...
-      └─ plugin2
-         └─ pomx.ml
-         └─ ...
-   └─ settings
-      └─ org.eclipse.jdt.core.prefs
-```
-
-we can write the following configuration
-
-``` xml
-<plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-eclipse-plugin</artifactId>
-  <version>2.9</version>
-  <executions>
-    <execution>
-      <phase>initialize</phase>
-      <goals>
-        <goal>eclipse</goal>
-      </goals>
-    </execution>
-  </executions>
-  <configuration>
-    <additionalConfig>
-      <file>
-        <name>.settings/org.eclipse.jdt.core.prefs</name>
-        <location>../../settings/org.eclipse.jdt.core.prefs</location>
-      </file>
-    </additionalConfig>
-  </configuration>
-</plugin>
-```
-
-This will copy the settings from **/settings/** to **plugin1/.settings**
-and **plugin2/.settings**.
-
-Note that the parent pom will not have the settings. Indeed, the path
-**../../settings** is not valid from the root of the repository. For this
-project, the M2E Settings plugin will silently fail. If the parent project
-needs the same configuration, one way would be to duplicate the configuration
-with a relative path that works for the parent plugin:
-
-
-``` xml
-<!-- This location will work for nested plugins and
-   silently fail for the parent -->
-<file>
-  <name>.settings/org.eclipse.jdt.core.prefs</name>
-  <location>../../settings/org.eclipse.jdt.core.prefs</location>
-</file>
-<!-- This location will silently fail for nested
-   plugins and work for the parent -->
-<file>
-  <name>.settings/org.eclipse.jdt.core.prefs</name>
-  <location>./settings/org.eclipse.jdt.core.prefs</location>
-</file>
-```
 
 ## Releasing
 
