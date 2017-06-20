@@ -29,7 +29,12 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(ProjectSettingsConfigurator.class);
 
-	private static final String ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN = "org.ietr.maven:m2e-settings-maven-plugin";
+	public static final String GROUP_ID = "org.ietr.maven";
+	public static final String ARTIFACT_ID = "m2e-settings-maven-plugin";
+	public static final String GOAL = "m2e-settings";
+
+	private static final String PLUGIN_ID = GROUP_ID + ":" + ARTIFACT_ID;
+
 
 	@Override
 	public void configure(
@@ -40,14 +45,14 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 				.getMavenProject();
 
 		Plugin eclipsePlugin = mavenProject.getBuild().getPluginsAsMap()
-				.get(ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN);
+				.get(PLUGIN_ID);
 		if (eclipsePlugin == null) {
 			final String message = "Could not set eclipse settings, consider "
-					+ ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN + "!";
+					+ PLUGIN_ID + "!";
 			LOGGER.info(message);
 		} else {
 			final String message = "Using "
-					+ ORG_APACHE_MAVEN_PLUGINS_MAVEN_ECLIPSE_PLUGIN
+					+ PLUGIN_ID
 					+ " configuration";
 			LOGGER.info(message);
 			try {
