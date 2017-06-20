@@ -1,5 +1,17 @@
 # M2E Settings
 
+## What does this fork add ?
+
+*   In the `<file><location>` tags, the paths supported are the same as 
+in the m2e-code-quality plugins, that is classpath, filesystem or 
+project relative.
+*   The specified maven plugin is a dummy one whose execution does 
+nothing, but simply allows to store some additional configuration in the
+POM file. This allows a central configuration instead of having to play
+with the maven compiler and the maven eclipse plugin at different places.
+
+## Description
+
 Provide consistent Eclipse IDE settings for your team from a Maven POM.
 The M2E Settings plugin will copy formatting, findbugs and other plugin
 settings from a centrally maintained settings JAR to your workspace and
