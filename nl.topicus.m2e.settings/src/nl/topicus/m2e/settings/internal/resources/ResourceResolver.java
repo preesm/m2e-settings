@@ -51,26 +51,27 @@ import org.slf4j.LoggerFactory;
 
 import nl.topicus.m2e.settings.internal.ProjectSettingsConfigurator;
 
-
 /**
  * A utility class to resolve resources, which includes searching in resources
  * specified with the {@literal <dependencies>} of the Maven pluginWrapper
  * configuration.
  *
+ * This piece of code comes from the m2e-code-quality project (see
+ * https://github.com/m2e-code-quality/m2e-code-quality). It was adapted
+ * slightly to the context of m2e-settings.
+ *
  * @since 0.9.8
  */
 public final class ResourceResolver {
 
-
-	private static final Logger LOG =
-	        LoggerFactory.getLogger(ResourceResolver.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ResourceResolver.class);
 
 	private final ClassRealm pluginRealm;
 	private final IPath projectLocation;
 	private final List<IPath> projectLocations;
 
-	public ResourceResolver(final ClassRealm pluginRealm,
-	        final IPath projectLocation, final List<IPath> projectLocations) {
+	public ResourceResolver(final ClassRealm pluginRealm, final IPath projectLocation,
+			final List<IPath> projectLocations) {
 		if (!Objects.nonNull(projectLocation)) {
 			throw new IllegalArgumentException();
 		}
@@ -122,20 +123,16 @@ public final class ResourceResolver {
 		if (pluginRealm == null) {
 			return null;
 		}
-		String fixedResource =
-		        resource.startsWith("/") ? resource.substring(1) : resource;
+		String fixedResource = resource.startsWith("/") ? resource.substring(1) : resource;
 		try {
-			List<URL> urls =
-			        Collections.list(pluginRealm.getResources(fixedResource));
+			List<URL> urls = Collections.list(pluginRealm.getResources(fixedResource));
 			if (urls.isEmpty()) {
 				return null;
 			}
 			if (urls.size() > 1) {
-				LOG.warn(
-				        "Resource appears more than once on classpath, this is "
-				                + "dangerous because it makes resolving this resource "
-				                + "dependant on classpath ordering; location {} found in {}",
-				        fixedResource, urls);
+				LOG.warn("Resource appears more than once on classpath, this is "
+						+ "dangerous because it makes resolving this resource "
+						+ "dependant on classpath ordering; location {} found in {}", fixedResource, urls);
 			}
 			return urls.get(0);
 		} catch (IOException e) {
@@ -160,8 +157,7 @@ public final class ResourceResolver {
 				return path.toUri().toURL();
 			}
 		} catch (InvalidPathException | IOException e) {
-			LOG.trace("Could not open resource {} from file system", resource,
-			        e);
+			LOG.trace("Could not open resource {} from file system", resource, e);
 		}
 		return null;
 	}
@@ -170,34 +166,27 @@ public final class ResourceResolver {
 		return getResourceRelativeFromIPath(projectLocation, resource);
 	}
 
-	private URL getResourceRelativeFromIPath(final IPath path,
-	        final String resource) {
+	private URL getResourceRelativeFromIPath(final IPath path, final String resource) {
 		try {
 			final File file = path.append(resource).toFile();
 			if (file.exists()) {
 				return file.toURI().toURL();
 			}
 		} catch (final IOException e) {
-			LOG.trace("Could not open resource {} relative to project location",
-			        resource, e);
+			LOG.trace("Could not open resource {} relative to project location", resource, e);
 		}
 		return null;
 	}
 
-
-
-
-
-	public static ResourceResolver getResourceResolver(
-			ProjectConfigurationRequest projectConfigurationRequest, IProgressMonitor monitor) throws CoreException {
-
+	public static ResourceResolver getResourceResolver(ProjectConfigurationRequest projectConfigurationRequest,
+			IProgressMonitor monitor) throws CoreException {
 
 		IMavenProjectFacade mavenProjectFacade = projectConfigurationRequest.getMavenProjectFacade();
 		List<MojoExecution> mojoExecutions = mavenProjectFacade.getMojoExecutions(ProjectSettingsConfigurator.GROUP_ID,
 				ProjectSettingsConfigurator.ARTIFACT_ID, monitor, ProjectSettingsConfigurator.GOAL);
 
 		if (mojoExecutions.size() < 1) {
-			LOG.warn("Could not access Mojo Execution for plugin ID "+ProjectSettingsConfigurator.PLUGIN_ID);
+			LOG.warn("Could not access Mojo Execution for plugin ID " + ProjectSettingsConfigurator.PLUGIN_ID);
 			return null;
 		}
 		MojoExecution mojoExecution = mojoExecutions.get(0);
@@ -211,30 +200,23 @@ public final class ResourceResolver {
 		final IMaven mvn = MavenPlugin.getMaven();
 		final List<IPath> pluginDepencyProjectLocations = new ArrayList<>();
 		final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		final IMavenProjectRegistry mavenProjectRegistry =
-		        MavenPlugin.getMavenProjectRegistry();
-		final IMavenProjectFacade[] projects =
-		        mavenProjectRegistry.getProjects();
-		final List<Dependency> dependencies =
-		        mojoExecution.getPlugin().getDependencies();
+		final IMavenProjectRegistry mavenProjectRegistry = MavenPlugin.getMavenProjectRegistry();
+		final IMavenProjectFacade[] projects = mavenProjectRegistry.getProjects();
+		final List<Dependency> dependencies = mojoExecution.getPlugin().getDependencies();
 		for (final Dependency dependency : dependencies) {
 			for (final IMavenProjectFacade projectFacade : projects) {
 				final IProject project = projectFacade.getProject();
 				if (!project.isAccessible()) {
-					LOG.debug("Project registry contains closed project {}",
-					        project);
+					LOG.debug("Project registry contains closed project {}", project);
 					// this is actually a bug somewhere in registry refresh
 					// logic, closed projects should not be there
 					continue;
 				}
 				final ArtifactKey artifactKey = projectFacade.getArtifactKey();
 				if (artifactKey.getGroupId().equals(dependency.getGroupId())
-				        && artifactKey.getArtifactId()
-				                .equals(dependency.getArtifactId())
-				        && artifactKey.getVersion()
-				                .equals(dependency.getVersion())) {
-					final IResource outputLocation =
-					        root.findMember(projectFacade.getOutputLocation());
+						&& artifactKey.getArtifactId().equals(dependency.getArtifactId())
+						&& artifactKey.getVersion().equals(dependency.getVersion())) {
+					final IResource outputLocation = root.findMember(projectFacade.getOutputLocation());
 					if (outputLocation != null) {
 						pluginDepencyProjectLocations.add(outputLocation.getLocation());
 					}
@@ -242,8 +224,7 @@ public final class ResourceResolver {
 			}
 		}
 		try {
-			final Mojo configuredMojo =
-			        mvn.getConfiguredMojo(session, mojoExecution, Mojo.class);
+			final Mojo configuredMojo = mvn.getConfiguredMojo(session, mojoExecution, Mojo.class);
 			mvn.releaseMojo(configuredMojo, mojoExecution);
 		} catch (CoreException e) {
 			if (pluginDepencyProjectLocations.isEmpty()) {
@@ -251,9 +232,8 @@ public final class ResourceResolver {
 			}
 			LOG.trace("Could not get mojo", e);
 		}
-		return new ResourceResolver(mojoExecution.getMojoDescriptor()
-		        .getPluginDescriptor().getClassRealm(), location,
-		        pluginDepencyProjectLocations);
+		return new ResourceResolver(mojoExecution.getMojoDescriptor().getPluginDescriptor().getClassRealm(), location,
+				pluginDepencyProjectLocations);
 	}
 
 }
