@@ -2,12 +2,11 @@ package nl.topicus.m2e.settings.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
+import java.net.URL;
 import java.util.List;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
+
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IFile;
@@ -24,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import nl.topicus.m2e.settings.internal.resources.ResourceResolver;
+
 public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 
 	private static final Logger LOGGER = LoggerFactory
@@ -33,7 +34,7 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 	public static final String ARTIFACT_ID = "m2e-settings-maven-plugin";
 	public static final String GOAL = "m2e-settings";
 
-	private static final String PLUGIN_ID = GROUP_ID + ":" + ARTIFACT_ID;
+	public static final String PLUGIN_ID = GROUP_ID + ":" + ARTIFACT_ID;
 
 
 	@Override
@@ -159,42 +160,13 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 			String filePath, Plugin eclipsePlugin, IProgressMonitor monitor)
 			throws IOException, CoreException {
 
-		// first remvoe leading /
-		final String cleanFilePath;
-		if (filePath.startsWith("/"))
-			cleanFilePath = filePath.substring(1);
-		else
-			cleanFilePath = filePath;
 
-		// lookup in current file system
-		final MavenProject mavenProject = projectConfigurationRequest
-				.getMavenProject();
+		ResourceResolver resourceResolver = ResourceResolver.getResourceResolver(projectConfigurationRequest, monitor);
+		URL resolveLocation = resourceResolver.resolveLocation(filePath);
+		InputStream openStream = resolveLocation.openStream();
+		return openStream;
 
-		final java.nio.file.Path path = FileSystems.getDefault().getPath(
-				mavenProject.getBasedir().getAbsolutePath(), cleanFilePath);
-		final boolean exists = path.toFile().exists();
-		if (exists) {
-			final String message = "Found entry on local file system";
-			LOGGER.info(message);
-			return Files.newInputStream(path);
-		}
-
-		// if not found, lookup in dependency jars
-		List<JarFile> jarFiles = JarFileUtil.resolveJar(maven,
-				eclipsePlugin.getDependencies(), monitor);
-		for (JarFile jarFile : jarFiles) {
-			ZipEntry entry = jarFile.getEntry(cleanFilePath);
-			if (entry != null) {
-				final String message = "Found entry in dependency jar "
-						+ jarFile.getName();
-				LOGGER.info(message);
-				return jarFile.getInputStream(entry);
-			}
-		}
-		final String message = "Entry " + cleanFilePath + " not found in "
-				+ eclipsePlugin;
-		LOGGER.warn(message);
-		return null;
 	}
+
 
 }
