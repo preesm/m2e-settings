@@ -35,8 +35,7 @@ git clean -xdf
 mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$NEW_VERSION -Dtycho.mode=maven
 
 #commit new version in develop
-git add -A
-git commit -m "[RELENG] Prepare version $NEW_VERSION"
+git commit -am "[RELENG] Prepare version $NEW_VERSION"
 
 #merge in master, add tag
 git checkout $MAIN_BRANCH
@@ -46,7 +45,7 @@ git tag v$NEW_VERSION
 #move to snapshot version in develop and push
 git checkout $DEV_BRANCH
 mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$NEW_VERSION-SNAPSHOT -Dtycho.mode=maven
-git commit -m "[RELENG] Move to snapshot version"
+git commit -am "[RELENG] Move to snapshot version"
 
 #deploy from master
 git checkout $MAIN_BRANCH
