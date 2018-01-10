@@ -65,7 +65,7 @@ The default configuration would look like:
   <build>
     <plugins>
       <plugin>
-        <groupId>org.ietr.maven</groupId>
+        <groupId>org.preesm.maven</groupId>
         <artifactId>m2e-settings-maven-plugin</artifactId>
         <version>1.0.1</version>
         <executions>
@@ -197,11 +197,11 @@ example above).
 
 ``` xml
 <plugin>
-  <groupId>org.ietr.maven</groupId>
+  <groupId>org.preesm.maven</groupId>
   <artifactId>m2e-settings-maven-plugin</artifactId>
   <version>1.0.1</version>
     <dependency>
-      <groupId>org.ietr.preesm</groupId>
+      <groupId>org.preesm.maven</groupId>
       <artifactId>coding-policy</artifactId>
       <version>${preesm-settings-version}</version>
     </dependency>

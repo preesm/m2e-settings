@@ -30,7 +30,7 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(ProjectSettingsConfigurator.class);
 
-	public static final String GROUP_ID = "org.ietr.maven";
+	public static final String GROUP_ID = "org.preesm.maven";
 	public static final String ARTIFACT_ID = "m2e-settings-maven-plugin";
 	public static final String GOAL = "m2e-settings";
 
