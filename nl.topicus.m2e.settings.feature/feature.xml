@@ -2,7 +2,7 @@
 <feature
       id="nl.topicus.m2e.settings.feature"
       label="Eclipse Settings for M2E"
-      version="2.1.0"
+      version="2.1.0.qualifier"
       provider-name="Topicus Onderwijs"
       plugin="nl.topicus.m2e.settings">
 
