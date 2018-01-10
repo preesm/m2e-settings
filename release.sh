@@ -58,5 +58,11 @@ cp nl.topicus.m2e.settings.repository/target/repository/ site -R
 
 git add site
 git commit -m "[RELENG] Update site to version $NEW_VERSION"
-
 git clean -xdf
+
+#push all branches
+git push
+git checkout $MAIN_BRANCH
+git push
+git checkout $DEV_BRANCH
+git push
