@@ -50,3 +50,13 @@ git commit -am "[RELENG] Move to snapshot version"
 #deploy from master
 git checkout $MAIN_BRANCH
 
+mvn -e -C -U -V clean verify
+
+git checkout gh-pages
+rm site/ -rf
+cp nl.topicus.m2e.settings.repository/target/repository/ site -R
+
+git add site
+git commit -m "[RELENG] Update site to version $NEW_VERSION"
+
+git clean -xdf
