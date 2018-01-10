@@ -19,7 +19,6 @@ package nl.topicus.m2e.settings.internal.resources;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -153,7 +152,7 @@ public final class ResourceResolver {
 	private URL getResourceFromFileSystem(final String resource) {
 		try {
 			final Path path = Paths.get(resource);
-			if (Files.exists(path)) {
+			if (path.toFile().exists()) {
 				return path.toUri().toURL();
 			}
 		} catch (InvalidPathException | IOException e) {
@@ -185,7 +184,7 @@ public final class ResourceResolver {
 		List<MojoExecution> mojoExecutions = mavenProjectFacade.getMojoExecutions(ProjectSettingsConfigurator.GROUP_ID,
 				ProjectSettingsConfigurator.ARTIFACT_ID, monitor, ProjectSettingsConfigurator.GOAL);
 
-		if (mojoExecutions.size() < 1) {
+		if (mojoExecutions.isEmpty()) {
 			LOG.warn("Could not access Mojo Execution for plugin ID " + ProjectSettingsConfigurator.PLUGIN_ID);
 			return null;
 		}

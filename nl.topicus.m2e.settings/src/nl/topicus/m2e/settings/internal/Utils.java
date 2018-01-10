@@ -5,6 +5,11 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 
 public final class Utils {
+
+	private Utils() {
+		// disallow instantiation
+	}
+
 	public static void createDirectory(IContainer folder) throws CoreException {
 		if (!folder.exists()) {
 			IContainer parent = folder.getParent();

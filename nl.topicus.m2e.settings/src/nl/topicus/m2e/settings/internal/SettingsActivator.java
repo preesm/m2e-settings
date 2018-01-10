@@ -9,14 +9,12 @@ public class SettingsActivator implements BundleActivator {
 
 	@Override
 	public void start(BundleContext context) {
-		// TODO Auto-generated method stub
-
+		// nothing specific
 	}
 
 	@Override
 	public void stop(BundleContext context) {
-		// TODO Auto-generated method stub
-
+		// nothing specific
 	}
 
 }

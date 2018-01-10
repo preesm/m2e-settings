@@ -19,7 +19,7 @@ public final class JarFileUtil {
 	public static List<JarFile> resolveJar(IMaven maven,
 			List<Dependency> dependencies, IProgressMonitor monitor)
 			throws IOException, CoreException {
-		List<JarFile> jarFiles = new ArrayList<JarFile>();
+		List<JarFile> jarFiles = new ArrayList<>();
 		for (int i = 0; i < dependencies.size(); i++) {
 			Dependency dependency = dependencies.get(i);
 

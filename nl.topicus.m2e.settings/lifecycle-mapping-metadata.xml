@@ -3,7 +3,7 @@
   <pluginExecutions>
     <pluginExecution>
       <pluginExecutionFilter>
-        <groupId>org.ietr.maven</groupId>
+        <groupId>org.preesm.maven</groupId>
         <artifactId>m2e-settings-maven-plugin</artifactId>
         <versionRange>[0.0.0,)</versionRange>
         <goals>

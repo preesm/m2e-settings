@@ -30,7 +30,7 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(ProjectSettingsConfigurator.class);
 
-	public static final String GROUP_ID = "org.ietr.maven";
+	public static final String GROUP_ID = "org.preesm.maven";
 	public static final String ARTIFACT_ID = "m2e-settings-maven-plugin";
 	public static final String GOAL = "m2e-settings";
 
@@ -96,15 +96,14 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 			return false;
 		}
 
-		applyEclipsePreferencesPref(projectConfigurationRequest, settingsFiles,
-				eclipsePlugin, monitor);
+		applyEclipsePreferencesPref(projectConfigurationRequest, settingsFiles, monitor);
 
 		return true;
 	}
 
 	private void applyEclipsePreferencesPref(
 			ProjectConfigurationRequest projectConfigurationRequest,
-			List<EclipseSettingsFile> settingsFiles, Plugin eclipsePlugin,
+			List<EclipseSettingsFile> settingsFiles,
 			IProgressMonitor monitor) throws IOException, CoreException {
 
 		IProject project = projectConfigurationRequest.getProject();
@@ -113,8 +112,7 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 			InputStream contentStream = null;
 			try {
 				contentStream = openStream(projectConfigurationRequest,
-						eclipsePreference.getLocation(), eclipsePlugin,
-						monitor);
+						eclipsePreference.getLocation(), monitor);
 				if (contentStream == null) {
 					LOGGER.error("Could not find content for: "
 							+ eclipsePreference.getLocation());
@@ -157,15 +155,11 @@ public class ProjectSettingsConfigurator extends AbstractProjectConfigurator {
 
 	private InputStream openStream(
 			ProjectConfigurationRequest projectConfigurationRequest,
-			String filePath, Plugin eclipsePlugin, IProgressMonitor monitor)
+			String filePath, IProgressMonitor monitor)
 			throws IOException, CoreException {
-
-
 		ResourceResolver resourceResolver = ResourceResolver.getResourceResolver(projectConfigurationRequest, monitor);
 		URL resolveLocation = resourceResolver.resolveLocation(filePath);
-		InputStream openStream = resolveLocation.openStream();
-		return openStream;
-
+		return resolveLocation.openStream();
 	}
 
 

@@ -1,259 +1,62 @@
-#!/bin/sh
+#!/bin/bash -eu
 
-function getVersion {
-        cat << EOF | xmllint --noent --shell pom.xml | grep content | cut -f2 -d=
-setns pom=http://maven.apache.org/POM/4.0.0
-xpath /pom:project/pom:version/text()
-EOF
-}
+### Config
+DEV_BRANCH=develop
+MAIN_BRANCH=master
 
-agentcount=`ps aux|grep gpg-agent|wc -l`
+CURRENT_VERSION=`mvn -B -Dtycho.mode=maven help:evaluate -Dexpression=project.version | grep -v 'INFO'`
+[ "$#" -ne "1" ] && echo -e "usage: $0 <new version>\nNote: current version = ${CURRENT_VERSION}" && exit 1
 
-current_version=$(getVersion)
-major_version=$(expr $current_version : '\(.*\)\..*\..*\-SNAPSHOT')
-minor_version=$(expr $current_version : '.*\.\(.*\)\..*\-SNAPSHOT')
-bugfix_version=$(expr $current_version : '.*\..*\.\(.*\)-SNAPSHOT')
+# First check access on git (will exit on error)
+echo "Testing Github permission"
+git ls-remote git@github.com:preesm/m2e-settings.git > /dev/null
 
-CURRENT_VERSION=$major_version.$minor_version.$bugfix_version.$(date +"%Y%m%d%H%M")
-NEW_VERSION="$major_version.$minor_version.$(expr $bugfix_version + 1)-SNAPSHOT"
+#warning
+echo "Warning: this script will delete ignored files and remove all changes in $DEV_BRANCH and $MAIN_BRANCH"
+read -p "Do you want to conitnue ? [NO/yes] " ANS
+LCANS=`echo "${ANS}" | tr '[:upper:]' '[:lower:]'`
+[ "${LCANS}" != "yes" ] && echo "Aborting." && exit 1
 
-echo "Releasing M2E Settings plugin for Eclipse version $CURRENT_VERSION
-------------------------------------------------------------------------
-This script assumes you are running on OS X, it hasn't been tested on
-any other operating systems, and you can bet it won't work on Windows...
+NEW_VERSION=$1
 
-REQUIREMENTS:
+CURRENT_BRANCH=$(cd `dirname $0` && echo `git branch`)
+ORIG_DIR=`pwd`
+DIR=$(cd `dirname $0` && echo `git rev-parse --show-toplevel`)
+TODAY_DATE=`date +%Y.%m.%d`
+#change to git root dir
+cd $DIR
 
- - a pure JDK 7 environment, JDK 8 or newer won't cut it
- - Maven 3.2.1 (older releases are b0rked, just don't bother)
- - gpg, gpg-agent and pinentry for signing"
+#move to dev branch and clean repo
+git checkout $DEV_BRANCH
+git reset --hard
+git clean -xdf
 
-export JAVA_HOME=`/usr/libexec/java_home -v1.7`
-echo "
-Current Java version is: $(java -version 2>&1 | tail -n 2 | head -n 1)
-"
+#update version in code and stash changes
+mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$NEW_VERSION -Dtycho.mode=maven
 
-printf "Performing: 'mvn clean' "
-if ! mvn clean ;
-then
-    echo "FAILED..."
-fi
+#commit new version in develop
+git commit -am "[RELENG] Prepare version $NEW_VERSION"
 
-mkdir -p target
+#merge in master, add tag
+git checkout $MAIN_BRANCH
+git merge --no-ff $DEV_BRANCH -m "merge branch '$DEV_BRANCH' for new version $NEW_VERSION"
+git tag v$NEW_VERSION
 
-echo "Releasing $CURRENT_VERSION" > target/release.log
+#move to snapshot version in develop and push
+git checkout $DEV_BRANCH
+mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$NEW_VERSION-SNAPSHOT -Dtycho.mode=maven
+git commit -am "[RELENG] Move to snapshot version"
 
-printf "Performing: 'mvn tycho-versions:set-version -DnewVersion=$CURRENT_VERSION' "
-if ! mvn tycho-versions:set-version -DnewVersion=$CURRENT_VERSION >> target/release.log ;
-then
-    echo "FAILED...
+#deploy from master
+git checkout $MAIN_BRANCH
 
-See target/release.log for more information.
+mvn -e -C -U -V clean verify
 
-Use the following command to revert your workspace to the original
-state:
+git checkout gh-pages
+rm site/ -rf
+cp nl.topicus.m2e.settings.repository/target/repository/ site -R
 
-    git checkout .
-"
-    exit 1
-else
-    echo DONE...
-    echo "" >> target/release.log
-fi
+git add site
+git commit -m "[RELENG] Update site to version $NEW_VERSION"
 
-printf "Performing: 'git commit -a -m \"Preparing to release $CURRENT_VERSION\"' "
-echo "git commit -a -m \"Preparing to release $CURRENT_VERSION\"" >> target/release.log
-if ! git commit -a -m "Preparing to release $CURRENT_VERSION" >> target/release.log ;
-then
-    echo "FAILED...
-
-See target/release.log for more information.
-
-Use the following command to revert your workspace to the original
-state:
-
-    git checkout .
-"
-    exit 1
-else
-    echo DONE...
-    echo "" >> target/release.log
-fi
-
-printf "Performing: 'mvn package' "
-echo "mvn package" >> target/release.log
-if ! mvn package >> target/release.log ;
-then
-    echo "FAILED...
-
-See target/release.log for more information.
-
-Use the following commands to revert your workspace to the original
-state:
-
-    rm -rf site
-    git reset HEAD^ --hard
-"
-    exit 1
-else
-    echo DONE...
-    echo "" >> target/release.log
-fi
-
-printf "Performing: 'rm -rf site' "
-echo "rm -rf site" >> target/release.log
-if ! rm -rf site >> target/release.log ;
-then
-    echo "FAILED...
-
-See target/release.log for more information.
-
-Use the following commands to revert your workspace to the original
-state:
-
-    rm -rf site
-    git reset HEAD^ --hard
-"
-    exit 1
-else
-    echo DONE...
-    echo "" >> target/release.log
-fi
-
-printf "Performing: 'mv nl.topicus.m2e.settings.repository/target/repository ./site' "
-echo "mv nl.topicus.m2e.settings.repository/target/repository ./site" >> target/release.log;
-if ! mv nl.topicus.m2e.settings.repository/target/repository ./site >> target/release.log;
-then
-    echo "FAILED...
-
-See target/release.log for more information.
-
-Use the following commands to revert your workspace to the original
-state:
-
-    rm -rf site
-    git reset HEAD^ --hard
-"
-    exit 1
-else
-    echo DONE...
-    echo "" >> target/release.log
-fi
-
-printf "Performing: 'git add site' "
-echo "git add site" >> target/release.log;
-if ! git add site >> target/release.log ;
-then
-    echo "FAILED...
-
-See target/release.log for more information.
-
-Use the following commands to revert your workspace to the original
-state:
-
-    rm -rf site
-    git reset HEAD^ --hard
-"
-    exit 1
-else
-    echo DONE...
-    echo "" >> target/release.log
-fi
-
-printf "Performing: 'git commit -m \"Created $CURRENT_VERSION\" "
-echo "git commit -m \"Created $CURRENT_VERSION\"" >> target/release.log
-if ! git commit -m "Created $CURRENT_VERSION" >> target/release.log ;
-then
-    echo "FAILED...
-
-See target/release.log for more information.
-
-Use the following commands to revert your workspace to the original
-state:
-
-    rm -rf site
-    git reset HEAD^ --hard
-"
-    exit 1
-else
-    echo DONE...
-    echo "" >> target/release.log
-fi
-
-printf "Performing: 'git tag $CURRENT_VERSION' "
-echo "git tag $CURRENT_VERSION" >> target/release.log
-if ! git tag $CURRENT_VERSION >> target/release.log;
-then
-    echo "FAILED...
-
-See target/release.log for more information.
-
-Use the following commands to revert your workspace to the original
-state:
-
-    rm -rf site
-    git reset HEAD^ --hard
-
-Check if the tag was created:
-
-    git tag --list
-"
-    exit 1
-else
-    echo DONE...
-    echo "" >> target/release.log
-fi
-
-printf "Performing: 'mvn tycho-versions:set-version -DnewVersion=$NEW_VERSION' "
-echo "mvn tycho-versions:set-version -DnewVersion=$NEW_VERSION" >> target/release.log
-if ! mvn tycho-versions:set-version -DnewVersion=$NEW_VERSION >> target/release.log ;
-then
-    echo "FAILED...
-
-See target/release.log for more information.
-
-Use the following commands to revert your workspace to the original
-state:
-
-    rm -rf site
-    git reset HEAD^ --hard
-    git tag -d $CURRENT_VERSION
-"
-    exit 1
-else
-    echo DONE...
-    echo "" >> target/release.log
-fi
-
-printf "Performing: 'git commit -a -m \"Preparing for new development\"' "
-echo "git commit -a -m \"Preparing for new development\"" >> target/release.log
-if ! git commit -a -m "Preparing for new development" >> target/release.log ;
-then
-    echo "FAILED...
-
-See target/release.log for more information.
-
-Use the following commands to revert your workspace to the original
-state:
-
-    rm -rf site
-    git reset HEAD^ --hard
-    git tag -d $CURRENT_VERSION
-"
-    exit 1
-else
-    echo DONE...
-    echo "" >> target/release.log
-fi
-
-echo "
-Done!
-
-All you need to do is check whether the release is OK, and then publish 
-the artefacts by issuing the following command:
-
-    git push
-    git push --tags
-
-Have fun!
-"
+git clean -xdf
