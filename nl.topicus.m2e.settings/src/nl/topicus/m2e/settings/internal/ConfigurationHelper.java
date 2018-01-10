@@ -1,6 +1,7 @@
 package nl.topicus.m2e.settings.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.model.Plugin;
@@ -23,7 +24,7 @@ public final class ConfigurationHelper {
 
 		if (configurationXpp3Dom == null) {
 			LOGGER.error("Configuration should be provided.");
-			return null;
+			return Collections.emptyList();
 		}
 
 		return readEclipsePreferences(configurationXpp3Dom);
@@ -31,7 +32,7 @@ public final class ConfigurationHelper {
 
 	private static List<EclipseSettingsFile> readEclipsePreferences(
 			Xpp3Dom configurationXpp3Dom) {
-		List<EclipseSettingsFile> settingsFiles = new ArrayList<EclipseSettingsFile>();
+		List<EclipseSettingsFile> settingsFiles = new ArrayList<>();
 		Xpp3Dom preferencesDom = configurationXpp3Dom
 				.getChild("additionalConfig");
 		if (preferencesDom != null) {
