@@ -14,6 +14,20 @@
 		<repositoryPathId>m2e-settings</repositoryPathId>
 		<p2MetadataName>M2E Handler for maven-eclipse-plugin</p2MetadataName>
 		<tycho.version>1.0.0</tycho.version>
+
+		<!-- ############### -->
+		<!-- ECLIPSE MIRRORS -->
+		<!-- ############### -->
+		<!-- ## Main (mostly down or very slow ...) : -->
+		<!-- http://download.eclipse.org -->
+		<!-- ## Mirrors : -->
+		<!-- http://ftp.fau.de/eclipse/ -->
+		<!-- http://mirror.ibcp.fr/pub/eclipse/ -->
+		<!-- http://ftp.halifax.rwth-aachen.de/eclipse/ -->
+		<!-- http://eclipse.mirror.wearetriple.com/ -->
+		<!-- http://artfiles.org/eclipse.org/ -->
+		<!-- http://mirror.switch.ch/eclipse/ -->
+		<eclipse.mirror>http://mirror.ibcp.fr/pub/eclipse/</eclipse.mirror>
 	</properties>
 
 	<modules>
