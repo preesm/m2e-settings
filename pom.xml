@@ -24,6 +24,18 @@
 
 
 	<repositories>
+		<!-- add Eclipse repository to resolve dependencies -->
+		<repository>
+			<id>Oxygen</id>
+			<layout>p2</layout>
+			<url>${eclipse.mirror}/releases/oxygen/</url>
+		</repository>
+		<!-- add Eclipse updates for latest releases -->
+		<repository>
+			<id>Oxygen Updates</id>
+			<layout>p2</layout>
+			<url>${eclipse.mirror}/eclipse/updates/4.7</url>
+		</repository>
 		<!-- add M2E releases repository to resolve dependencies -->
 		<repository>
 			<id>M2E P2 Repos</id>
