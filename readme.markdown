@@ -24,7 +24,7 @@ configure each project to use those settings.
 Many thanks to [Olivier Nouguier](https://github.com/cheleb) for the
 [first version of this plugin](https://github.com/cheleb/m2e-settings).
 
-This project is licensed under the [MIT license](https://github.com/topicusonderwijs/m2e-settings/blob/master/LICENSE.txt).
+This project is licensed under the [MIT license](LICENSE.txt).
 
 ### Table of Contents
 
@@ -36,17 +36,18 @@ This project is licensed under the [MIT license](https://github.com/topicusonder
 
 Update site URL:
 
- - https://antoine-morvan.github.io/m2e-settings/site/
+ - https://preesm.github.io/m2e-settings/site/
 
 ### Installing the Eclipse plugin
 
 - Add a new update site to your Eclipse settings:
-- Select "Install new software" (OS X: under Help)
+- Select "Help / Install new software"
 - Click "Add"
 - Fill in the Name field: "M2E Settings plugin"
-- Fill in the Location field: "https://github.com/topicusonderwijs/m2e-settings/raw/master/site"
+- Fill in the Location field: "https://preesm.github.io/m2e-settings/site/"
 - Click "OK"
-- Click "Next" ad infinitum
+- Select M2E Settings plugin
+- Click "Next / Accept" ad infinitum
 
 ## Configuration
 
@@ -67,7 +68,7 @@ The default configuration would look like:
       <plugin>
         <groupId>org.preesm.maven</groupId>
         <artifactId>m2e-settings-maven-plugin</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.0</version>
         <executions>
           <execution>
             <id>load-eclipse-settings</id>
@@ -199,7 +200,7 @@ example above).
 <plugin>
   <groupId>org.preesm.maven</groupId>
   <artifactId>m2e-settings-maven-plugin</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.0</version>
     <dependency>
       <groupId>org.preesm.maven</groupId>
       <artifactId>coding-policy</artifactId>
@@ -230,31 +231,15 @@ Run the release shell script from the root folder of the m2e-settings
 project:
 
 ``` bash
-./release.sh
+./release.sh X.Y.Z
 ```
 
 This script performs the following steps:
 
-- assign a new release version number to the current workspace
+- assign a new release version number to the current workspace (given as argument)
 - create a new distribution of the new version in the current workspace
 - create an updated P2 repository in the current workspace
-- commit all these results into the git repository
-
-This doesn't push the intermediate results to github, this is a manual
-step you have to do to release a new version.
-
-## Uploading a release
-
-When you have checked the release and it is found OK, then you can
-upload the new version to github and instruct your team to perform an
-update:
-
-```
-git push
-```
-
-This will push the changes to github and publish a new update site to
-the update site URL.
+- commit all these results into the git repository  (include site on the gh-pages branch)
 
 
 [1]: http://maven.apache.org/plugins/maven-eclipse-plugin
